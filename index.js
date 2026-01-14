@@ -1,8 +1,8 @@
-import express from 'express';
-import nodemailer from 'nodemailer';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
+const express = require('express');
+const nodemailer = require('nodemailer');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -17,7 +17,6 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
   res.send('Backend is running successfully');
 });
-
 
 app.post('/send', async (req, res) => {
   const { name, email, company, phone, district, state, message } = req.body;
@@ -59,5 +58,6 @@ Message: ${message}
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 
 
