@@ -14,6 +14,11 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 
+app.get('/', (req, res) => {
+  res.send('Backend is running successfully');
+});
+
+
 app.post('/send', async (req, res) => {
   const { name, email, company, phone, district, state, message } = req.body;
 
