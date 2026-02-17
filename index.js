@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 8000;
 
 // Middleware
 app.use(cors({
-  origin: '*',
+  origin: 'https://react-portfolio-tau.vercel.app/',
 }));
 app.use(express.json());
 
