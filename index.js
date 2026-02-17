@@ -2,17 +2,28 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const rateLimit = require('express-rate-limit');
+
+app.use('/send', limiter);
+
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 // Middleware
 app.use(cors({
-  origin: '*',
+  origin: process.env.FRONTEND_URL || '*',
 }));
 app.use(express.json());
+
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // 20 requests per IP
+  message: "Too many requests. Please try again later."
+});
 
 // Test Route
 app.get('/', (req, res) => {
@@ -30,23 +41,15 @@ app.post('/send', async (req, res) => {
   }
 
   try {
-    // ✅ Correct Gmail Transporter Config
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 465,
-      secure: true, // true for port 465
+      secure: true,
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // MUST be Google App Password
-      },
-      tls: {
-        rejectUnauthorized: false, // 🔥 Fixes self-signed certificate issue
+        pass: process.env.EMAIL_PASS,
       },
     });
-
-    // Optional: Verify connection before sending
-    await transporter.verify();
-    console.log("SMTP server is ready to send emails");
 
     const mailOptions = {
       from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
@@ -72,7 +75,6 @@ Message: ${message}
 
   } catch (error) {
     console.error("EMAIL ERROR:", error);
-
     res.status(500).json({
       message: 'Failed to send message. Try again.'
     });
